@@ -29,6 +29,7 @@ class EventTypes:
             'change_metadata_packs_target',
             'change_metadata_packs_sharkweb_path',
             'change_metadata_packs_lims_path',
+            'add_widget_to_save',
         ]
 
         for item in self.event_types:

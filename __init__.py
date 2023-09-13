@@ -19,4 +19,4 @@ INFO = dict(title='CTD-processering',
                        ],
             user_page_class='PageUser')  # Must match name in ALL_PAGES in main app
 
-USER_SETTINGS = []
+USER_SETTINGS = [('basic', 'ctd_processing')]

@@ -43,7 +43,7 @@ class App(PluginApp):
 
     @property
     def user(self):
-        return self.main_app.user
+        return self.user_manager.user
 
     def startup(self):
         """

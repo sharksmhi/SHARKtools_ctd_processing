@@ -74,6 +74,8 @@ class PageStart(tk.Frame):
 
         self._button_bg_color = None
 
+        self._widgets_to_save = []
+
     @property
     def user(self):
         return self.parent_app.user
@@ -185,7 +187,7 @@ class PageStart(tk.Frame):
         """
         self._build_frame()
         self._save_obj.add_components(self._local_data_path_source,
-                                      self._local_data_path_root,
+                                      # self._local_data_path_root,
                                       self._server_data_path_root,
                                       self._asvp_files_directory,
                                       self._config_path,
@@ -208,11 +210,34 @@ class PageStart(tk.Frame):
         subscribe('change_year', self._callback_change_year)
         subscribe('change_tau', self._callback_change_tau)
 
+        subscribe('add_widget_to_save', self._callback_add_widget_to_save)
+
         subscribe('select_platform', self._callback_select_platform)
+
+        self._callback_add_widget_to_save(self._local_data_path_root)
+
+    def _callback_add_widget_to_save(self, widget):
+        self._widgets_to_save.append(widget)
+
+    def _save_to_user(self):
+        """Saves all values from widgets in self._widgets_to_save to the current user"""
+        for widget in self._widgets_to_save:
+            self.user.ctd_processing.set(widget._id, widget.get(), save=True)
+        self.user.ctd_processing.save()
+
+    def _load_from_user(self):
+        print(f'{self._widgets_to_save=}')
+        print(f'{self.parent_app.user_manager.users=}')
+        print(f'_load_from_user: {self.user=}')
+        print(f'_load_from_user: {self.user.name=}')
+        print(f'_load_from_user: {self.user.__dict__=}')
+        for widget in self._widgets_to_save:
+            widget.set(self.user.ctd_processing.setdefault(widget._id, ''))
 
     def update_page(self):
         logger.debug('start: update_page')
         self._save_obj.load(user=self.user.name)
+        self._load_from_user()
 
         self._notebook_local.select_frame('Börja här')
 
@@ -232,6 +257,7 @@ class PageStart(tk.Frame):
     def close(self):
         self._callback_stop_manual_qc()
         self._ftp_frame.close()
+        self._save_to_user()
         self._save_obj.save(user=self.user.name)
 
     def _make_config_root_updates(self, message=False):
