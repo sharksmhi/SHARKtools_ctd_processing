@@ -11,6 +11,7 @@ from tkinter import messagebox
 
 import file_explorer
 from ctd_processing import metadata
+from file_explorer.file_explorer_logger import create_xlsx_report, fe_logger
 from sharkpylib.tklib import tkinter_widgets as tkw
 
 from . import components
@@ -49,6 +50,8 @@ class PageEditRaw(tk.Frame):
             self._target_dir,
             self._sharkweb_path,
             self._lims_path,
+            self._use_api,
+            self._overwrite_data,
         )
         self._saves.load()
 
@@ -132,6 +135,42 @@ class PageEditRaw(tk.Frame):
         tkw.grid_configure(frame_lims, nr_columns=2)
 
         r += 1
+        frame_api = tk.Frame(frame)
+        frame_api.grid(row=r, column=c, sticky='w')
+        # self._boolvar_api = tk.BooleanVar()
+        # tk.Checkbutton(frame_api, text='Använd SHARKweb-API', variable=self._boolvar_api).grid(row=0, column=0)
+        self._use_api = components.Checkbutton(frame_api,
+                                                      'metadata_packs_use_api',
+                                                      title='Använd SHARKweb-API',
+                                                      row=0,
+                                                      column=0)
+        tkw.grid_configure(frame_api, nr_columns=2)
+
+        r += 1
+        frame_ow_data = tk.Frame(frame)
+        frame_ow_data.grid(row=r, column=c, sticky='w')
+        #self._boolvar_overwrite_data = tk.BooleanVar()
+        self._overwrite_data = components.Checkbutton(frame_ow_data,
+                                                            'metadata_packs_overwrite_data',
+                                                            title='Skriv över data',
+                                                            row=0,
+                                                            column=0)
+        #tk.Checkbutton(frame_ow_data, text='Skriv över data', variable=self._boolvar_overwrite_data).grid(row=0, column=0)
+        tkw.grid_configure(frame_ow_data, nr_columns=2)
+
+        r += 1
+        frame_ow_files = tk.Frame(frame)
+        frame_ow_files.grid(row=r, column=c, sticky='w')
+        # self._boolvar_overwrite_files = tk.BooleanVar()
+        # tk.Checkbutton(frame_ow_files, text='Skriv över filer', variable=self._boolvar_overwrite_files).grid(row=0, column=0)
+        self._overwrite_files = components.Checkbutton(frame_ow_files,
+                                                      'metadata_packs_overwrite_files',
+                                                      title='Skriv över filer',
+                                                      row=0,
+                                                      column=0)
+        tkw.grid_configure(frame_ow_files, nr_columns=2)
+
+        r += 1
         tk.Button(frame, text='Uppdatera metadata', command=self._update_metadata).grid(row=r, column=c, sticky='w')
 
         tkw.grid_configure(frame, nr_rows=r+1, nr_columns=c+1)
@@ -191,10 +230,14 @@ class PageEditRaw(tk.Frame):
             file_explorer.edit_seabird_raw_files_in_packages(
                 packs=packs,
                 output_dir=output_dir,
+                sharkweb_api=self._use_api.get(),
                 sharkweb_file_path=sharkweb_file_path,
                 lims_file_path=lims_file_path,
-                columns=META_COLUMNS,
+                overwrite_files=self._overwrite_files.get(),
+                overwrite_data=self._overwrite_data.get(),
+                # columns=META_COLUMNS,
             )
+            create_xlsx_report(fe_logger, open_file=True, include_items=True)
             msg = f'Metadata har lagts till i {len(packs)} profiler.'
             logger.info(msg)
             messagebox.showinfo('Uppdatera metadata', msg)
