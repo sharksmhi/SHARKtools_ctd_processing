@@ -5,10 +5,10 @@
 import tkinter as tk
 from tkinter import ttk
 
-import core
+from sharktools import core
 
-import sharkpylib.tklib.tkinter_widgets as tkw
-from sharkpylib import utils
+import shark_tkinter_lib.tkinter_widgets as tkw
+from sharktools_ctd_processing import utils
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors

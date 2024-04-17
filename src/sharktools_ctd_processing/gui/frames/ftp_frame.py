@@ -4,8 +4,8 @@ from pathlib import Path
 from tkinter import messagebox
 import traceback
 
-import sharkpylib.tklib.tkinter_widgets as tkw
-from sharkpylib import ftp
+import shark_tkinter_lib.tkinter_widgets as tkw
+from sharktools_ctd_processing import ftp
 
 from .. import components
 from ...events import subscribe

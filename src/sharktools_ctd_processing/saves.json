@@ -1,0 +1,19 @@
+{
+    "C22561-ctd_processing": {
+        "asvp_files_directory": null,
+        "config_path": "",
+        "create_asvp_files": false,
+        "create_plots_option": true,
+        "local_data_path_root": "",
+        "local_data_path_source": null,
+        "overwrite": false,
+        "platform": "",
+        "server_data_path_root": null,
+        "surfacesoak": "Normal 8 m",
+        "tau": false,
+        "year": "2024"
+    },
+    "default-ftp": {
+        "ftp_credentials_path": false
+    }
+}

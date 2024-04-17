@@ -24,10 +24,10 @@ from ctdpy.core.utils import get_reversed_dictionary
 from file_explorer.file_handler.exceptions import RootDirectoryNotSetError
 from file_explorer.file_handler.seabird_ctd import get_seabird_file_handler
 from profileqc import qc
-from sharkpylib import plot
-from sharkpylib.tklib import tkinter_widgets as tkw
+import shark_plot_lib as plot
+import shark_tkinter_lib.tkinter_widgets as tkw
 
-from gui.utils import get_root_app
+from sharktools.gui.utils import get_root_app
 from . import components
 from . import frames
 from ..events import subscribe

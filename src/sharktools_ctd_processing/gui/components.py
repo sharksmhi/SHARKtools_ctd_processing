@@ -9,7 +9,7 @@ from pathlib import Path
 
 from ..events import post_event
 
-from sharkpylib.tklib import tkinter_widgets as tkw
+import shark_tkinter_lib.tkinter_widgets as tkw
 
 
 class MonospaceLabel(tk.Label):

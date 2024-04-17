@@ -9,6 +9,7 @@ dependencies = [
     "profileqc @ git+https://github.com/sharksmhi/profileqc.git@11-refactor",
     "shark-tkinter-lib @ git+https://github.com/sharksmhi/shark_tkinter_lib.git",
     "ctd-processing @ git+https://github.com/sharksmhi/ctd_processing.git@3-refactor",
+    "shark-plot-lib @ git+https://github.com/sharksmhi/shark_plot_lib.git",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
@@ -19,7 +20,7 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [project.entry-points.'sharktools.plugins']
-ctd_pre_system = 'sharktools_ctd_processing'
+ctd_processing = 'sharktools_ctd_processing'
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -30,3 +31,8 @@ mypkg = ["."]
 
 [tool.pdm]
 distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "SHARKtools @ git+https://github.com/sharksmhi/SHARKtools.git@4-refactor",
+]

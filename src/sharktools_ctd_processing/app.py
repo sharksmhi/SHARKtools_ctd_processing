@@ -7,11 +7,11 @@
 import os
 import tkinter as tk
 
-import sharkpylib.tklib.tkinter_widgets as tkw
+import shark_tkinter_lib.tkinter_widgets as tkw
 
-import core
-from plugins.SHARKtools_ctd_processing import gui
-from plugins.plugin_app import PluginApp
+from sharktools import core
+from sharktools_ctd_processing import gui
+from sharktools.plugin.plugin_app import PluginApp
 
 from .events import subscribe
 
@@ -82,7 +82,10 @@ class App(PluginApp):
         # self.update_all()
 
     def _goto_pre_system_svea(self , *args):
-        self.main_app.show_subframe('SHARKtools_pre_system_Svea', 'PageStart')
+        try:
+            self.main_app.show_subframe('sharktools_ctd_pre_system', 'PageStart')
+        except:
+            raise
 
     def close(self):
         for page_name, frame in self.frames.items():

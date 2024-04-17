@@ -12,7 +12,7 @@ from tkinter import messagebox
 import file_explorer
 from ctd_processing import metadata
 from file_explorer.file_explorer_logger import create_xlsx_report, fe_logger
-from sharkpylib.tklib import tkinter_widgets as tkw
+import shark_tkinter_lib.tkinter_widgets as tkw
 
 from . import components
 from .. import events

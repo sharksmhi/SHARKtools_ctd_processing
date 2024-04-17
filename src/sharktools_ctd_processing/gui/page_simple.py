@@ -1,3 +1,4 @@
+import datetime
 import logging
 import shutil
 import time
@@ -5,28 +6,24 @@ import tkinter as tk
 import traceback
 from pathlib import Path
 from tkinter import messagebox
-import datetime
 
 import ctd_processing
 import file_explorer
-from file_explorer.file_handler.exceptions import RootDirectoryNotSetError
-from file_explorer.file_handler.seabird_ctd import get_seabird_file_handler
+import shark_tkinter_lib.tkinter_widgets as tkw
 from ctd_processing.processing.sbe_processing import SBEProcessing
 from ctd_processing.processing.sbe_processing_paths import SBEProcessingPaths
 from ctd_processing.visual_qc.vis_qc import VisQC
 from ctdpy.core import session as ctdpy_session
 from ctdpy.core.utils import get_reversed_dictionary
+from file_explorer.file_handler.exceptions import RootDirectoryNotSetError
+from file_explorer.file_handler.seabird_ctd import get_seabird_file_handler
 from profileqc import qc
-# from profileqc.specific import get_specific_qc_settings
-from sharkpylib.plot import create_seabird_like_plots_for_package
-from sharkpylib.qc.qc_default import QCBlueprint
-from sharkpylib.tklib import tkinter_widgets as tkw
+from shark_plot_lib import create_seabird_like_plots_for_package
 
 from . import components
 from . import frames
 from ..events import subscribe
 from ..saves import SaveComponents
-from ..utils import get_files_in_directory
 from ..utils import open_paths_in_default_program
 
 logger = logging.getLogger(__name__)
