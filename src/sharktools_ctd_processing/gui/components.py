@@ -416,12 +416,12 @@ class DirectoryLabelText(LabelText):
 
     def _on_select_directory(self, event):
         directory = filedialog.askdirectory()
+        print(f'{directory=}')
         if not directory:
             return
         directory = Path(directory)
         self._fix_ends_with_folders()
         directory = self._fix_path(directory)
-
         self._stringvar.set(str(directory))
         post_event(f'change_{self._id}', directory)
 

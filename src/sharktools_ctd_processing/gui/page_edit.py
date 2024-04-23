@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*-
-#
-# Copyright (c) 2018 SMHI, Swedish Meteorological and Hydrological Institute
-# License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
-
 import logging
 import tkinter as tk
 import traceback
@@ -19,6 +13,7 @@ from .. import events
 from ..saves import SaveComponents
 
 META_COLUMNS = metadata.get_metadata_columns()
+MANUAL_META_ITEMS = ['MPROG', 'SLABO', 'ALABO', 'REFSK']
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +25,7 @@ class PageEditRaw(tk.Frame):
         self.parent = parent
         self.parent_app = parent_app
         self._saves = SaveComponents('edit')
+        self._manual_meta = {}
 
         self._all_packs = {}
 
@@ -51,8 +47,10 @@ class PageEditRaw(tk.Frame):
             self._sharkweb_path,
             self._lims_path,
             self._use_api,
-            self._overwrite_data,
+            # self._overwrite_data,
         )
+        for item in MANUAL_META_ITEMS:
+            self._saves.add_components(self._manual_meta[item])
         self._saves.load()
 
     def _add_events(self):
@@ -102,7 +100,8 @@ class PageEditRaw(tk.Frame):
                                                          prop_items=prop.copy(),
                                                          prop_selected=prop.copy(),
                                                          row=r,
-                                                         column=c)
+                                                         column=c,
+                                                         columnspan=2)
 
         r += 1
         self._target_dir = components.DirectoryButtonText(frame, 'metadata_packs_target',
@@ -111,6 +110,47 @@ class PageEditRaw(tk.Frame):
                                                           column=c)
 
         r += 1
+        self._labelframe_data_source = tk.LabelFrame(frame, text='Datakällor')
+        self._labelframe_data_source.grid(row=r, column=0, sticky='w', padx=10)
+        self._build_data_source()
+
+        self._labelframe_manual_meta = tk.LabelFrame(frame, text='Manuell data')
+        self._labelframe_manual_meta.grid(row=r, column=1, sticky='w', padx=10)
+        self._build_manual_meta()
+
+        r += 1
+        frame_ow_data = tk.Frame(frame)
+        frame_ow_data.grid(row=r, column=c, sticky='w')
+        # self._boolvar_overwrite_data = tk.BooleanVar()
+        # self._overwrite_data = components.Checkbutton(frame_ow_data,
+        #                                               'metadata_packs_overwrite_data',
+        #                                               title='Skriv över data',
+        #                                               row=0,
+        #                                               column=0)
+        # # tk.Checkbutton(frame_ow_data, text='Skriv över data', variable=self._boolvar_overwrite_data).grid(row=0, column=0)
+        # tkw.grid_configure(frame_ow_data, nr_columns=2)
+        #
+        # r += 1
+        frame_ow_files = tk.Frame(frame)
+        frame_ow_files.grid(row=r, column=c, sticky='w')
+        # self._boolvar_overwrite_files = tk.BooleanVar()
+        # tk.Checkbutton(frame_ow_files, text='Skriv över filer', variable=self._boolvar_overwrite_files).grid(row=0, column=0)
+        self._overwrite_files = components.Checkbutton(frame_ow_files,
+                                                       'metadata_packs_overwrite_files',
+                                                       title='Skriv över filer',
+                                                       row=0,
+                                                       column=0)
+        tkw.grid_configure(frame_ow_files, nr_columns=2)
+
+        r += 1
+        tk.Button(frame, text='Uppdatera metadata', command=self._update_metadata).grid(row=r, column=c, sticky='w')
+
+        tkw.grid_configure(frame, nr_rows=r + 1, nr_columns=c + 1)
+
+    def _build_data_source(self):
+        frame = self._labelframe_data_source
+        r = 0
+        c = 0
         frame_sharkweb = tk.Frame(frame)
         frame_sharkweb.grid(row=r, column=c, sticky='w')
         self._boolvar_sharkweb = tk.BooleanVar()
@@ -146,36 +186,32 @@ class PageEditRaw(tk.Frame):
                                                       column=0)
         tkw.grid_configure(frame_api, nr_columns=2)
 
-        r += 1
-        frame_ow_data = tk.Frame(frame)
-        frame_ow_data.grid(row=r, column=c, sticky='w')
-        #self._boolvar_overwrite_data = tk.BooleanVar()
-        self._overwrite_data = components.Checkbutton(frame_ow_data,
-                                                            'metadata_packs_overwrite_data',
-                                                            title='Skriv över data',
-                                                            row=0,
-                                                            column=0)
-        #tk.Checkbutton(frame_ow_data, text='Skriv över data', variable=self._boolvar_overwrite_data).grid(row=0, column=0)
-        tkw.grid_configure(frame_ow_data, nr_columns=2)
-
-        r += 1
-        frame_ow_files = tk.Frame(frame)
-        frame_ow_files.grid(row=r, column=c, sticky='w')
-        # self._boolvar_overwrite_files = tk.BooleanVar()
-        # tk.Checkbutton(frame_ow_files, text='Skriv över filer', variable=self._boolvar_overwrite_files).grid(row=0, column=0)
-        self._overwrite_files = components.Checkbutton(frame_ow_files,
-                                                      'metadata_packs_overwrite_files',
-                                                      title='Skriv över filer',
-                                                      row=0,
+    def _build_manual_meta(self):
+        layout = dict(
+            padx=10,
+            pady=10
+        )
+        frame = self._labelframe_manual_meta
+        self._manual_meta = {}
+        r = 0
+        for r, item in enumerate(MANUAL_META_ITEMS):
+            # tk.Label(frame, text=item).grid(row=r, column=0, **layout)
+            # self._manual_meta_stringvars[item] = tk.StringVar()
+            self._manual_meta[item] = components.LabelEntry(frame,
+                                                      f'manual_meta_{item}',
+                                                      title=item,
+                                                      width=25,
+                                                      row=r,
                                                       column=0)
-        tkw.grid_configure(frame_ow_files, nr_columns=2)
+            # tk.Entry(frame, textvariable=self._manual_meta_stringvars[item]).grid(row=r, column=1, **layout)
+        tk.Button(frame, text='Rensa', command=self._clear_manual_meta).grid(row=r+1, column=0, columnspan=2, **layout)
 
-        r += 1
-        tk.Button(frame, text='Uppdatera metadata', command=self._update_metadata).grid(row=r, column=c, sticky='w')
-
-        tkw.grid_configure(frame, nr_rows=r+1, nr_columns=c+1)
+    def _clear_manual_meta(self):
+        for stvar in self._manual_meta.values():
+            stvar.set('')
 
     def _on_change_source(self, path):
+        print(f'{path=}')
         self._all_packs = file_explorer.get_packages_in_directory(path)
         self._packs_listbox.update_items(sorted(self._all_packs))
 
@@ -220,6 +256,13 @@ class PageEditRaw(tk.Frame):
             messagebox.showwarning('Uppdatera metadata', msg)
             return
 
+        manual_meta = {}
+        for item, entry in self._manual_meta.items():
+            value = entry.get().strip()
+            if not value:
+                continue
+            manual_meta[item] = value
+
         packs = [self._all_packs[key] for key in self._packs_listbox.get_selected()]
         if not packs:
             msg = 'Inga filer valda'
@@ -234,7 +277,7 @@ class PageEditRaw(tk.Frame):
                 sharkweb_file_path=sharkweb_file_path,
                 lims_file_path=lims_file_path,
                 overwrite_files=self._overwrite_files.get(),
-                overwrite_data=self._overwrite_data.get(),
+                **manual_meta
                 # columns=META_COLUMNS,
             )
             create_xlsx_report(fe_logger, open_file=True, include_items=True)

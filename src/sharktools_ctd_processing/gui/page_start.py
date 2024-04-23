@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*-
-#
-# Copyright (c) 2018 SMHI, Swedish Meteorological and Hydrological Institute
-# License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
+import datetime
 import logging
 import shutil
 import time
@@ -10,10 +6,11 @@ import tkinter as tk
 import traceback
 from pathlib import Path
 from tkinter import messagebox
-import datetime
 
 import ctd_processing
 import file_explorer
+import shark_plot_lib as plot
+import shark_tkinter_lib.tkinter_widgets as tkw
 from ctd_processing import exceptions
 from ctd_processing.processing.sbe_processing import SBEProcessing
 from ctd_processing.processing.sbe_processing_paths import SBEProcessingPaths
@@ -24,10 +21,8 @@ from ctdpy.core.utils import get_reversed_dictionary
 from file_explorer.file_handler.exceptions import RootDirectoryNotSetError
 from file_explorer.file_handler.seabird_ctd import get_seabird_file_handler
 from profileqc import qc
-import shark_plot_lib as plot
-import shark_tkinter_lib.tkinter_widgets as tkw
-
 from sharktools.gui.utils import get_root_app
+
 from . import components
 from . import frames
 from ..events import subscribe
@@ -211,6 +206,7 @@ class PageStart(tk.Frame):
         subscribe('select_platform', self._callback_select_platform)
 
     def update_page(self):
+        return
         logger.debug('start: update_page')
         self._save_obj.load(user=self.user.name)
 
@@ -379,15 +375,6 @@ class PageStart(tk.Frame):
         self._plot_config_popup.destroy()
         self._plot_config_popup = None
 
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-
     def _build_frame(self):
         layout = dict(padx=5,
                       pady=5,
@@ -438,9 +425,6 @@ class PageStart(tk.Frame):
                                                                     title='Spara asvp filer här:',
                                                                     row=4, column=0, **layout)
 
-        # self._button_update = tk.Button(frame, text='Uppdatera mappinnehåll mm.',
-        #                                  command=self._update_all_local)
-        # self._button_update.grid(row=2, column=1, padx=5, pady=2, sticky='ne')
 
         tkw.grid_configure(frame, nr_rows=5, nr_columns=2)
 

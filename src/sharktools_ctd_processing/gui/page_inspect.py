@@ -128,6 +128,7 @@ class PageInspect(tk.Frame):
         self._intvar_overwrite = tk.IntVar()
         tk.Checkbutton(frame, text='Skriv över filer', variable=self._intvar_overwrite).grid(row=r, column=1, **grid,
                                                                                              sticky='w')
+
         r += 1
         tk.Button(frame, text='Kopiera filer till lokal mapp',
                   command=self._copy_to_local, **opt).grid(row=r, column=0, **grid)

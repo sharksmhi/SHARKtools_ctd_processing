@@ -1,9 +1,3 @@
-# Copyright (c) 2018 SMHI, Swedish Meteorological and Hydrological Institute 
-# License: MIT License (see LICENSE.txt or http://opensource.org/licenses/mit).
-
-# To use basemap you might need to install Microsoft Visual C++: https://visualstudio.microsoft.com/visual-cpp-build-tools/
-
-
 import os
 import tkinter as tk
 
