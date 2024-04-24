@@ -1,4 +1,5 @@
 import logging
+import pathlib
 import tkinter as tk
 import traceback
 from tkinter import messagebox
@@ -42,6 +43,11 @@ class PageEditRaw(tk.Frame):
         self._build()
         self._add_to_save()
         self._add_events()
+
+        sharkweb_file_path = self._sharkweb_path.get()
+        if sharkweb_file_path and not pathlib.Path(sharkweb_file_path).exists():
+            self._sharkweb_path.set('')
+
 
     def _add_to_save(self):
         self._saves.add_components(
@@ -264,11 +270,13 @@ class PageEditRaw(tk.Frame):
     def _on_change_lims_path(self, path=None):
         self._boolvar_lims.set(True)
 
-    def _get_report_filter(self):
+    def _get_report_filter(self) -> dict:
         filter = dict(levels=[])
         for key, value in self._report_log_levels.items():
             if value.get():
                 filter['levels'].append(key)
+        if not len(filter['levels']):
+            return {}
         return filter
 
     def _update_metadata(self, event=None):
