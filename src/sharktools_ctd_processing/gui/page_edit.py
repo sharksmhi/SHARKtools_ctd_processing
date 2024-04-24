@@ -14,6 +14,8 @@ from ..saves import SaveComponents
 
 META_COLUMNS = metadata.get_metadata_columns()
 MANUAL_META_ITEMS = ['MPROG', 'SLABO', 'ALABO', 'REFSK']
+LOG_LEVELS = ['error', 'warning', 'info', 'debug']
+
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +53,8 @@ class PageEditRaw(tk.Frame):
         )
         for item in MANUAL_META_ITEMS:
             self._saves.add_components(self._manual_meta[item])
+        for item in LOG_LEVELS:
+            self._saves.add_components(self._report_log_levels[item])
         self._saves.load()
 
     def _add_events(self):
@@ -118,9 +122,13 @@ class PageEditRaw(tk.Frame):
         self._labelframe_manual_meta.grid(row=r, column=1, sticky='w', padx=10)
         self._build_manual_meta()
 
-        r += 1
-        frame_ow_data = tk.Frame(frame)
-        frame_ow_data.grid(row=r, column=c, sticky='w')
+        self._labelframe_report = tk.LabelFrame(frame, text='Val för rapport')
+        self._labelframe_report.grid(row=r, column=2, sticky='w', padx=10)
+        self._build_report()
+
+        # r += 1
+        # frame_ow_data = tk.Frame(frame)
+        # frame_ow_data.grid(row=r, column=c, sticky='w')
         # self._boolvar_overwrite_data = tk.BooleanVar()
         # self._overwrite_data = components.Checkbutton(frame_ow_data,
         #                                               'metadata_packs_overwrite_data',
@@ -130,7 +138,7 @@ class PageEditRaw(tk.Frame):
         # # tk.Checkbutton(frame_ow_data, text='Skriv över data', variable=self._boolvar_overwrite_data).grid(row=0, column=0)
         # tkw.grid_configure(frame_ow_data, nr_columns=2)
         #
-        # r += 1
+        r += 1
         frame_ow_files = tk.Frame(frame)
         frame_ow_files.grid(row=r, column=c, sticky='w')
         # self._boolvar_overwrite_files = tk.BooleanVar()
@@ -214,6 +222,23 @@ class PageEditRaw(tk.Frame):
             # tk.Entry(frame, textvariable=self._manual_meta_stringvars[item]).grid(row=r, column=1, **layout)
         tk.Button(frame, text='Rensa', command=self._clear_manual_meta).grid(row=r+1, column=0, columnspan=2, **layout)
 
+    def _build_report(self):
+        # layout = dict(
+        #     padx=10,
+        #     pady=5
+        # )
+        frame = self._labelframe_report
+        self._report_log_levels = {}
+        for r, level in enumerate(LOG_LEVELS):
+            cbut = components.Checkbutton(frame,
+                                   f'report_level_{level}',
+                                   title=f'Inkludera nivå "{level}"',
+                                   row=r,
+                                   column=0,
+                                   pady=2)
+            cbut.set(True)
+            self._report_log_levels[level] = cbut
+
     def _clear_manual_meta(self):
         for stvar in self._manual_meta.values():
             stvar.set('')
@@ -238,6 +263,13 @@ class PageEditRaw(tk.Frame):
 
     def _on_change_lims_path(self, path=None):
         self._boolvar_lims.set(True)
+
+    def _get_report_filter(self):
+        filter = dict(levels=[])
+        for key, value in self._report_log_levels.items():
+            if value.get():
+                filter['levels'].append(key)
+        return filter
 
     def _update_metadata(self, event=None):
         logger.info('Updating metadata')
@@ -293,7 +325,7 @@ class PageEditRaw(tk.Frame):
                 **manual_meta
                 # columns=META_COLUMNS,
             )
-            create_xlsx_report(fe_logger, open_file=True, include_items=True)
+            create_xlsx_report(fe_logger, open_file=True, include_items=True, filter=self._get_report_filter())
             msg = f'Metadata har lagts till i {len(packs)} profiler.'
             logger.info(msg)
             messagebox.showinfo('Uppdatera metadata', msg)
