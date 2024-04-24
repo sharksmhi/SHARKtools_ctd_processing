@@ -177,14 +177,22 @@ class PageEditRaw(tk.Frame):
         r += 1
         frame_api = tk.Frame(frame)
         frame_api.grid(row=r, column=c, sticky='w')
-        # self._boolvar_api = tk.BooleanVar()
-        # tk.Checkbutton(frame_api, text='Använd SHARKweb-API', variable=self._boolvar_api).grid(row=0, column=0)
         self._use_api = components.Checkbutton(frame_api,
                                                       'metadata_packs_use_api',
                                                       title='Använd SHARKweb-API',
                                                       row=0,
                                                       column=0)
         tkw.grid_configure(frame_api, nr_columns=2)
+
+        r += 1
+        frame_svepa = tk.Frame(frame)
+        frame_svepa.grid(row=r, column=c, sticky='w')
+        self._use_svepa = components.Checkbutton(frame_svepa,
+                                               'metadata_packs_use_svepa',
+                                               title='Använd information från SVEPA \n(skriver INTE över data från annan källa) ',
+                                               row=0,
+                                               column=0)
+        tkw.grid_configure(frame_svepa, nr_columns=2)
 
     def _build_manual_meta(self):
         layout = dict(
@@ -212,8 +220,12 @@ class PageEditRaw(tk.Frame):
 
     def _on_change_source(self, path):
         print(f'{path=}')
-        self._all_packs = file_explorer.get_packages_in_directory(path)
-        self._packs_listbox.update_items(sorted(self._all_packs))
+        try:
+            self._all_packs = file_explorer.get_packages_in_directory(path)
+            self._packs_listbox.update_items(sorted(self._all_packs))
+        except Exception as e:
+            messagebox.showerror('Något gick fel!', f'{e}\n\n{traceback.format_exc()}')
+            raise
 
     def _on_change_target(self, path):
         pass
@@ -277,6 +289,7 @@ class PageEditRaw(tk.Frame):
                 sharkweb_file_path=sharkweb_file_path,
                 lims_file_path=lims_file_path,
                 overwrite_files=self._overwrite_files.get(),
+                from_svepa=self._use_svepa.get(),
                 **manual_meta
                 # columns=META_COLUMNS,
             )
