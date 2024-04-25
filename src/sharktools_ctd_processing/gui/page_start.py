@@ -206,7 +206,7 @@ class PageStart(tk.Frame):
         subscribe('select_platform', self._callback_select_platform)
 
     def update_page(self):
-        return
+        # return
         logger.debug('start: update_page')
         self._save_obj.load(user=self.user.name)
 
