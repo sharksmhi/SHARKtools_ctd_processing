@@ -7,7 +7,6 @@ authors = [
 ]
 dependencies = [
     "profileqc @ git+https://github.com/sharksmhi/profileqc.git@11-refactor",
-    "shark-tkinter-lib @ git+https://github.com/sharksmhi/shark_tkinter_lib.git",
     "ctd-processing @ git+https://github.com/sharksmhi/ctd_processing.git@3-refactor",
     "shark-plot-lib @ git+https://github.com/sharksmhi/shark_plot_lib.git",
 ]
