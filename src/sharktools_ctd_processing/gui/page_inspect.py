@@ -13,7 +13,7 @@ from tkinter import messagebox
 import ctd_processing
 import file_explorer
 from file_explorer.seabird.paths import SBEPaths
-from sharkpylib.tklib import tkinter_widgets as tkw
+import shark_tkinter_lib.tkinter_widgets as tkw
 
 from ..saves import SaveComponents
 
@@ -128,6 +128,7 @@ class PageInspect(tk.Frame):
         self._intvar_overwrite = tk.IntVar()
         tk.Checkbutton(frame, text='Skriv över filer', variable=self._intvar_overwrite).grid(row=r, column=1, **grid,
                                                                                              sticky='w')
+
         r += 1
         tk.Button(frame, text='Kopiera filer till lokal mapp',
                   command=self._copy_to_local, **opt).grid(row=r, column=0, **grid)

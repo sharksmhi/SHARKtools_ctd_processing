@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Callable
 from file_explorer import Package
-from sharkpylib import plot
-import sharkpylib.tklib.tkinter_widgets as tkw
+import shark_plot_lib as plot
+import shark_tkinter_lib.tkinter_widgets as tkw
 
 
 class PlotOptionsFrame(tk.Toplevel):

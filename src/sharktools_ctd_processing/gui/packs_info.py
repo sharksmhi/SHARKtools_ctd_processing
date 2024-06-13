@@ -1,4 +1,4 @@
-from sharkpylib.tklib import tkinter_widgets as tkw
+import shark_tkinter_lib.tkinter_widgets as tkw
 import tkinter as tk
 
 
