@@ -6,9 +6,9 @@ authors = [
     {name = "Magnus Wenzer", email = "nodc@smhi.se"},
 ]
 dependencies = [
-    "profileqc @ git+https://github.com/sharksmhi/profileqc.git@11-refactor",
-    "ctd-processing @ git+https://github.com/sharksmhi/ctd_processing.git@3-refactor",
-    "shark-plot-lib @ git+https://github.com/sharksmhi/shark_plot_lib.git",
+    "profileqc @ git+https://github.com/sharksmhi/profileqc.git@v1.0.0",
+    "ctd-processing @ git+https://github.com/sharksmhi/ctd_processing.git@v1.0.0",
+    "shark-plot-lib @ git+https://github.com/sharksmhi/shark_plot_lib.git@v1.0.0",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
