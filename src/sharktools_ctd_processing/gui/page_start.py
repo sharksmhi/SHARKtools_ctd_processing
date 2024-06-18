@@ -116,6 +116,9 @@ class PageStart(tk.Frame):
             logger.debug('done in: _update_file_handler_source')
         except RootDirectoryNotSetError:
             pass
+        except Exception as e:
+            self._local_data_path_source.value = ''
+            messagebox.showwarning('Setting path', e)
 
     def _update_file_handler_local(self, handler=None):
         handler = handler or self.file_handler
@@ -130,8 +133,9 @@ class PageStart(tk.Frame):
             logger.debug('done in: _update_file_handler_local')
         except RootDirectoryNotSetError:
             pass
-        except Exception:
-            raise
+        except Exception as e:
+            self._local_data_path_root.value = ''
+            messagebox.showwarning('Setting path', e)
 
     def _update_file_handler_server(self, handler=None):
         handler = handler or self.file_handler
@@ -146,6 +150,9 @@ class PageStart(tk.Frame):
             logger.debug('done in: _update_file_handler_server')
         except RootDirectoryNotSetError:
             pass
+        except Exception as e:
+            self._server_data_path_root.value = ''
+            messagebox.showwarning('Setting path', e)
 
     def _update_file_handler_config(self, handler=None):
         handler = handler or self.file_handler
@@ -159,6 +166,10 @@ class PageStart(tk.Frame):
             logger.debug('done in: _update_file_handler_config')
         except RootDirectoryNotSetError:
             pass
+        except Exception as e:
+            self._config_path.value = ''
+            messagebox.showwarning('Setting path', e)
+
 
     @property
     def sbe_processing_paths(self):
