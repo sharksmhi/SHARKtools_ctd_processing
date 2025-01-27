@@ -14,7 +14,7 @@ from .. import events
 from ..saves import SaveComponents
 
 META_COLUMNS = metadata.get_metadata_columns()
-MANUAL_META_ITEMS = ['MPROG', 'SLABO', 'ALABO', 'REFSK']
+MANUAL_META_ITEMS = ['MPROG', 'SLABO', 'ALABO', 'REFSK', 'ORDERER']
 LOG_LEVELS = ['error', 'warning', 'info', 'debug']
 
 

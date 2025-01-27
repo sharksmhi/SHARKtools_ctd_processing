@@ -1,0 +1,949 @@
+@startuml
+
+title Class diagram: sharktools_ctd_processing
+
+class app.App #D9B9B5 {
+	+active_page
+	+admin_mode
+	+all_ok
+	+container
+	+frames
+	+info_popup
+	+latest_loaded_sampling_type
+	+log_directory
+	+logger
+	+main_app
+	+page_history
+	+pages_started
+	+parent
+	+paths
+	+plugin_directory
+	+previous_page
+	+progress_running
+	+progress_running_toplevel
+	+root_directory
+	+titles
+	+user_manager
+	+version
+	user, @p
+==
+	+close()
+	+goto_previous_page()
+	+previous_page()
+	+show_frame()
+	+startup()
+	+startup_pages()
+	+update_all()
+	+update_app()
+	+update_page()
+	-_create_titles()
+	-_get_title()
+	-_goto_pre_system_svea()
+	-_set_frame()
+	-_set_load_frame()
+}
+
+class components.ButtonText #D5A8AB {
+	+button
+	+grid_frame
+	+title
+	-_id
+	-_stringvar
+	value, @p
+==
+	-_create_frame()
+	-_on_button_click()
+}
+
+class components.Checkbutton #D5A8AB {
+	+checkbutton
+	+grid_frame
+	+title
+	+value
+	-_booleanvar
+	-_id
+	value, @p
+==
+	+get()
+	+set()
+	-_create_frame()
+	-_on_checkbutton_click()
+}
+
+class components.DirectoryButtonText #D5A8AB {
+	+button
+	+grid_frame
+	+title
+	+value
+	-_end_with_folders
+	-_end_with_folders_original
+	-_hard_press
+	-_id
+	-_root_folder
+	-_stringvar
+	value, @p
+==
+	+get()
+	+set()
+	-_create_frame()
+	-_fix_ends_with_folders()
+	-_fix_path()
+	-_on_button_click()
+	-_on_button_click_hard()
+	-_open_dialog()
+}
+
+class components.DirectoryLabelText #D5A8AB {
+	+value
+	-_disabled
+	-_end_with_folders
+	-_end_with_folders_original
+	-_root_folder
+	value, @p
+==
+	+get()
+	+set()
+	-_fix_ends_with_folders()
+	-_fix_path()
+	-_on_select_directory()
+}
+
+class components.FilePathButtonText #D5A8AB {
+	+button
+	+grid_frame
+	+title
+	+value
+	-_hard_press
+	-_id
+	-_stringvar
+	value, @p
+==
+	+get()
+	+set()
+	-_create_frame()
+	-_on_button_click()
+	-_on_button_click_hard()
+	-_open_dialog()
+}
+
+class components.LabelDropdownList #D5A8AB {
+	+combobox
+	+grid_frame
+	+state
+	+title
+	+value
+	+width
+	-_id
+	-_old_value
+	-_stringvar
+	value, @p
+	values, @p
+==
+	+get()
+	+set()
+	-_create_frame()
+	-_has_new_value()
+	-_on_focus_in()
+	-_on_focus_out()
+	-_on_select()
+}
+
+class components.LabelEntry #D5A8AB {
+	+data_type
+	+entry
+	+grid_frame
+	+state
+	+title
+	+value
+	+width
+	-_id
+	-_stringvar
+	value, @p
+==
+	+get()
+	+set()
+	-_create_frame()
+	-_on_change_entry()
+	-_on_focus_out()
+}
+
+class components.LabelText #D5A8AB {
+	+grid_frame
+	+label
+	+title
+	-_id
+	-_stringvar
+	value, @p
+==
+	-_create_frame()
+}
+
+class components.ListboxWidget #D5A8AB {
+	+grid_frame
+	+prop_listbox
+	+selection_widget
+	+title
+	-_id
+==
+	+set()
+	-_create_frame()
+}
+
+class components.MonospaceLabel #D5A8AB {
+	
+==
+	
+}
+
+class components.SeriesSelection #D5A8AB {
+	+grid_frame
+	+selection_widget
+	+title
+	-_id
+==
+	+get_selected()
+	+set()
+	-_create_frame()
+	-_on_deselect()
+	-_on_select()
+}
+
+class components.YearEntry #D5A8AB {
+	
+==
+	-_on_change_entry()
+	-_on_click_entry()
+	-_on_focus_out()
+}
+
+class events.EventTypes #FD75AB {
+	+event_types
+==
+	-__contains__()
+}
+
+class events.InvalidEventType #FD75AB {
+	
+==
+	
+}
+
+class events._remove_existing #FD75AB {
+	
+==
+	
+}
+
+class events.nr_subscribers #FD75AB {
+	
+==
+	
+}
+
+class events.post_event #FD75AB {
+	
+==
+	
+}
+
+class events.print_even_types #FD75AB {
+	
+==
+	
+}
+
+class events.print_subscribers #FD75AB {
+	
+==
+	
+}
+
+class events.subscribe #FD75AB {
+	
+==
+	
+}
+
+class events.test_subscriber #FD75AB {
+	
+==
+	
+}
+
+class ftp.Ftp #7FEDBE {
+	+cred
+	+files_to_send
+	+status_callback
+	+subdirs
+	destination, @p
+	server_files, @p
+==
+	+add_files_to_send()
+	+change_directory()
+	+send_files()
+	-_send_files()
+}
+
+class ftp.FtpConnectionError #7FEDBE {
+	
+==
+	
+}
+
+class ftp_frame.FtpFrame #CC7CCB {
+	-_also_send_cnv_files
+	-_button_back_to_pre_system
+	-_button_send_files_via_ftp
+	-_file_handler
+	-_files_local_ftp
+	-_files_on_ftp
+	-_ftp_credentials_path
+	-_ftp_test_checkbutton
+	-_label_ftp_status
+	-_listbox_prop
+	-_local_data_path_ftp
+	-_save_obj
+	-_stringvar_ftp_status
+	-_stringvar_title_ftp
+	ftp_credentials, @p
+==
+	+close()
+	+deselect_all()
+	+get_all_items()
+	+get_all_keys()
+	+move_keys_to_selected()
+	+set_file_handler()
+	+update_frame()
+	-_build()
+	-_callback_continue_ftp()
+	-_callback_pre_system()
+	-_ftp_progress()
+	-_get_cnv_paths_matching_file_names()
+	-_get_ftp_destination()
+	-_get_ftp_title()
+	-_on_toggle_ftp_test()
+	-_update_files_ftp()
+	-_update_ftp_status()
+	-_update_items()
+}
+
+class ftp_frame.get_ftp_object #CC7CCB {
+	
+==
+	
+}
+
+class packs_info.PacksInfo #557AF7 {
+	+compilation, @ca
+	+suffixes, @ca
+	-_all_packs
+	-_callback_select
+	-_entry_meta_item
+	-_frame_key
+	-_labels_compilation
+	-_listbox_keys
+	-_listbox_meta
+	-_notebook
+	-_packs
+	-_selected_packs
+	-_selected_packs_info
+	-_stringvar_meta_item
+	-_stringvar_meta_unique
+	-_stringvars_compilation
+	-_stringvars_nr_files
+	selected_packs, @p
+==
+	+set_packs()
+	-_build()
+	-_build_frame_compilation()
+	-_build_frame_keys()
+	-_build_frame_metadata()
+	-_create_variables()
+	-_get_packs_info(), @sm
+	-_on_select_keys()
+	-_reset()
+	-_reset_compilation()
+	-_reset_metadata()
+	-_update_compilation()
+	-_update_listbox_keys()
+	-_update_metadata()
+	-_update_on_selected()
+}
+
+class page_edit.PageEditRaw #9F8BE6 {
+	+parent
+	+parent_app
+	-_all_packs
+	-_boolvar_lims
+	-_boolvar_sharkweb
+	-_frame_metadata_enrichment
+	-_labelframe_data_source
+	-_labelframe_manual_meta
+	-_labelframe_report
+	-_lims_path
+	-_manual_meta
+	-_overwrite_files
+	-_packs_listbox
+	-_report_log_levels
+	-_saves
+	-_sharkweb_path
+	-_source_dir
+	-_target_dir
+	-_use_api
+	-_use_svepa
+	user, @p
+==
+	+close()
+	+startup()
+	+update_page()
+	-_add_events()
+	-_add_to_save()
+	-_build()
+	-_build_data_source()
+	-_build_manual_meta()
+	-_build_metadata_enrichment()
+	-_build_report()
+	-_clear_manual_meta()
+	-_get_report_filter()
+	-_on_change_lims_path()
+	-_on_change_sharkweb_path()
+	-_on_change_source()
+	-_on_change_target()
+	-_on_select_packs()
+	-_update_metadata()
+}
+
+class page_inspect.PageInspect #A9555F {
+	+parent
+	+parent_app
+	-_all_packs_in_source_directory
+	-_frame_create
+	-_frame_paths
+	-_info_frame_local
+	-_info_frame_source
+	-_intvar_overwrite
+	-_notebook
+	-_saves
+	-_selected_packs
+	-_stringvar_mprog
+	-_stringvars_path
+	-_stringvars_stat_source
+	user, @p
+==
+	+close()
+	+startup()
+	+update_page()
+	-_add_to_save()
+	-_build()
+	-_build_frame_create()
+	-_build_frame_paths()
+	-_build_local_frame()
+	-_build_source_frame()
+	-_copy_to_local()
+	-_create_standard_format()
+	-_create_stringvars()
+	-_on_select_local_dir()
+	-_on_select_source_dir()
+	-_select_ctd_config_dir()
+	-_select_local_dir()
+	-_select_sharkweb_path()
+	-_select_source_dir()
+}
+
+class page_inspect.StringVar #A9555F {
+	-_id
+	-_stringvar
+==
+	+get()
+	+set()
+	-__call__()
+}
+
+class page_simple.PageSimple #FE9AF6 {
+	+bokeh_server
+	+parent
+	+parent_app
+	-_active_ids
+	-_active_keys
+	-_asvp_files_directory
+	-_button_bg_color
+	-_button_close_qc
+	-_button_open_qc
+	-_button_run
+	-_button_update
+	-_config_path
+	-_delete_old_asvp_files
+	-_file_handlers
+	-_files_source
+	-_frame_actions
+	-_frame_files
+	-_frame_options
+	-_frame_paths
+	-_ftp_frame
+	-_listbox_prop
+	-_local_data_path_root
+	-_local_data_path_source
+	-_manual_qc_active_ids
+	-_no_color
+	-_notebook
+	-_old_key
+	-_platform
+	-_save_obj
+	-_sbe_processing_objs
+	-_sbe_processing_paths
+	-_server_data_path_root
+	-_source_serno_to_file_paths
+	-_source_serno_to_hex_path
+	-_source_stem_to_serno
+	-_stringvar_nr_packs_missing_local
+	-_stringvar_nr_packs_missing_server
+	-_stringvar_nr_packs_missing_tot
+	-_stringvar_nr_packs_tot
+	-_surfacesoak
+	-_unprocessed_packs
+	-_year
+	-_yes_color
+	file_handler, @p
+	sbe_processing, @p
+	sbe_processing_paths, @p
+	user, @p
+	year, @p
+==
+	+close()
+	+startup()
+	+update_file_handler()
+	+update_page()
+	-_build_frame()
+	-_build_frame_actions()
+	-_build_frame_files()
+	-_build_frame_options()
+	-_build_frame_path()
+	-_build_ftp_frame()
+	-_build_processing_frame()
+	-_callback_change_config_path()
+	-_callback_change_year()
+	-_callback_select_platform()
+	-_close_manual_qc()
+	-_copy_files_to_server()
+	-_create_plots()
+	-_create_standard_format()
+	-_get_active_cnv_packs()
+	-_get_active_nsf_packs()
+	-_get_file_names_for_selected_files_cruise()
+	-_get_pack_for_file_stem()
+	-_open_manual_qc()
+	-_preform_automatic_qc()
+	-_process_files()
+	-_start_process()
+	-_update_file_handler_config()
+	-_update_file_handler_local()
+	-_update_file_handler_server()
+	-_update_file_handler_source()
+	-_update_files()
+	-_update_ftp_frame()
+	-_update_lists()
+	-_update_platform_list()
+	-_update_surfacesaok_list()
+}
+
+class page_simple.get_id_from_key #FE9AF6 {
+	
+==
+	
+}
+
+class page_simple.get_year_from_key #FE9AF6 {
+	
+==
+	
+}
+
+class page_start.PageStart #DDBD85 {
+	+bokeh_server
+	+parent
+	+parent_app
+	+root_app
+	+sbe_post_processing
+	-_asvp_files_directory
+	-_button_automatic_qc
+	-_button_bg_color
+	-_button_close_manual_qc
+	-_button_continue_cnv
+	-_button_continue_nsf_all
+	-_button_continue_nsf_missing
+	-_button_continue_nsf_not_updated
+	-_button_continue_nsf_select
+	-_button_continue_source
+	-_button_create_plots
+	-_button_open_manual_qc
+	-_button_update
+	-_config_path
+	-_converted_files
+	-_create_asvp_files
+	-_create_plots_option
+	-_file_handlers
+	-_files_local_cnv
+	-_files_local_nsf_all
+	-_files_local_nsf_missing
+	-_files_local_nsf_not_updated
+	-_files_local_nsf_select
+	-_files_local_qc
+	-_files_local_raw
+	-_files_local_source
+	-_files_server
+	-_frame_local_data
+	-_frame_server_data
+	-_ftp_frame
+	-_intvar_allow_automatic_qc_same_day
+	-_listbox_prop
+	-_local_data_path_cnv
+	-_local_data_path_nsf
+	-_local_data_path_qc
+	-_local_data_path_raw
+	-_local_data_path_root
+	-_local_data_path_source
+	-_notebook_copy_to_server
+	-_notebook_local
+	-_old_key
+	-_overwrite
+	-_platform
+	-_plot_config_popup
+	-_processed_files
+	-_save_obj
+	-_sbe_processing_objs
+	-_sbe_processing_paths
+	-_server_data_path_nsf
+	-_server_data_path_root
+	-_surfacesoak
+	-_tau
+	-_top_frame
+	-_year
+	file_handler, @p
+	sbe_processing, @p
+	sbe_processing_paths, @p
+	user, @p
+	year, @p
+==
+	+close()
+	+startup()
+	+update_file_handler()
+	+update_page()
+	-_build_frame()
+	-_build_frame_local_cnv()
+	-_build_frame_local_data()
+	-_build_frame_local_ftp()
+	-_build_frame_local_nsf()
+	-_build_frame_local_qc()
+	-_build_frame_local_raw()
+	-_build_frame_local_source()
+	-_build_frame_server_data()
+	-_build_top_frame()
+	-_callback_change_config_path()
+	-_callback_change_local_root_directory()
+	-_callback_change_local_source_directory()
+	-_callback_change_server_root_directory()
+	-_callback_change_tau()
+	-_callback_change_year()
+	-_callback_continue_automatic_qc()
+	-_callback_continue_cnv()
+	-_callback_continue_source()
+	-_callback_copy_all_to_server()
+	-_callback_copy_missing_to_server()
+	-_callback_copy_not_updated_to_server()
+	-_callback_copy_selected_to_server()
+	-_callback_create_plots()
+	-_callback_on_select_local_nsf()
+	-_callback_select_platform()
+	-_callback_start_manual_qc()
+	-_callback_stop_manual_qc()
+	-_callback_update_series_local_source()
+	-_clear_local_file_lists()
+	-_copy_to_server_and_update()
+	-_create_plots()
+	-_get_selected_local_cnv_file_paths()
+	-_get_selected_local_cnv_stems()
+	-_goto_pre_system()
+	-_make_config_root_updates()
+	-_on_return_plot_config()
+	-_on_toggle_ftp_test()
+	-_set_ctd_processing_object_with_latest_selected_file()
+	-_show_config_plot_popup()
+	-_update_file_handler_config()
+	-_update_file_handler_local()
+	-_update_file_handler_server()
+	-_update_file_handler_source()
+	-_update_files_all()
+	-_update_files_all_local()
+	-_update_files_all_server()
+	-_update_files_local_cnv()
+	-_update_files_local_nsf()
+	-_update_files_local_nsf_all()
+	-_update_files_local_nsf_not_on_server()
+	-_update_files_local_nsf_not_updated_on_server()
+	-_update_files_local_nsf_select()
+	-_update_files_local_qc()
+	-_update_files_local_raw()
+	-_update_files_local_source()
+	-_update_files_server()
+	-_update_ftp_frame()
+	-_update_local_data_directories()
+	-_update_platform_list()
+	-_update_server_data_directories()
+	-_update_surfacesaok_list()
+}
+
+class page_user.PageUser #DE9D95 {
+	+color_list
+	+main_app
+	+marker_list
+	+parent
+	+parent_app
+	+settings
+	+user
+	+user_manager
+==
+	+startup()
+	+update_page()
+	-_set_frame()
+}
+
+class plot_options_frame.PlotOptionsFrame #CBFFB6 {
+	-_callback
+	-_config
+	-_config_stringvars
+	-_pack
+==
+	-_build()
+	-_create_with_config()
+	-_create_without_config()
+	-_get_config()
+}
+
+class saves.Defaults #E5BFEC {
+	+data
+	+file_path
+	-_default_user_path
+	-_this_directory
+==
+	+get()
+	-_load()
+	-_load_default_user()
+	-_save_default_user()
+}
+
+class saves.SaveComponents #E5BFEC {
+	-_components_to_store
+	-_defaults
+	-_saves
+	-_saves_id_key
+==
+	+add_components()
+	+load()
+	+save()
+}
+
+class saves.Saves #E5BFEC {
+	+data
+	+file_path
+==
+	+get()
+	+set()
+	-_get_key(), @sm
+	-_load()
+	-_save()
+}
+
+class saves.get_default_user_file_path #E5BFEC {
+	
+==
+	
+}
+
+class saves.get_default_users #E5BFEC {
+	
+==
+	
+}
+
+class saves.old_SaveSelection #E5BFEC {
+	-_defaults
+	-_defaults, @ca
+	-_saves, @ca
+	-_saves_id_key, @ca
+	-_selections_to_store, @ca
+==
+	+load_selection()
+	+save_selection()
+}
+
+class utils.ColorsList #DEA58A {
+	
+==
+	+get_base_colors()
+	+get_css4_colors()
+	+get_tableau_colors()
+	-_filter_color_list()
+}
+
+class utils.MarkerList #DEA58A {
+	+description_to_marker
+	+marker_to_description
+==
+	+get_description()
+	+get_marker()
+}
+
+class utils.get_files_in_directory #DEA58A {
+	
+==
+	
+}
+
+class utils.open_path_in_default_program #DEA58A {
+	
+==
+	
+}
+
+class utils.open_paths_in_default_program #DEA58A {
+	
+==
+	
+}
+
+
+app.App <|-- PluginApp
+
+events.InvalidEventType <|-- Exception
+
+ftp.FtpConnectionError <|-- Exception
+
+utils.ColorsList <|-- list
+
+utils.MarkerList <|-- list
+
+
+
+
+
+
+
+
+components.DirectoryLabelText <|-- components.LabelText
+
+
+components.YearEntry <|-- components.LabelEntry
+
+
+
+
+
+
+
+
+
+
+
+saves.get_default_user_file_path o-- saves.get_default_users
+
+saves.Defaults o-- saves.get_default_user_file_path
+
+saves.old_SaveSelection o-- saves.Saves
+saves.old_SaveSelection o-- saves.Defaults
+saves.old_SaveSelection o-- saves.Defaults
+
+saves.SaveComponents o-- saves.Saves
+saves.SaveComponents o-- saves.Defaults
+
+utils.get_files_in_directory o-- utils.get_files_in_directory
+utils.get_files_in_directory o-- utils.get_files_in_directory
+
+components.LabelDropdownList o-- components.MonospaceLabel
+components.LabelDropdownList o-- page_inspect.StringVar
+
+components.Checkbutton o-- components.Checkbutton
+
+components.LabelEntry o-- components.MonospaceLabel
+components.LabelEntry o-- page_inspect.StringVar
+
+components.ListboxWidget o-- components.ListboxWidget
+
+page_inspect.StringVar o-- page_inspect.StringVar
+
+page_inspect.PageInspect o-- page_inspect.StringVar
+page_inspect.PageInspect o-- page_inspect.StringVar
+page_inspect.PageInspect o-- page_inspect.StringVar
+page_inspect.PageInspect o-- page_inspect.StringVar
+page_inspect.PageInspect o-- page_inspect.StringVar
+page_inspect.PageInspect o-- saves.SaveComponents
+page_inspect.PageInspect o-- components.Checkbutton
+page_inspect.PageInspect o-- packs_info.PacksInfo
+
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_year_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- page_simple.get_id_from_key
+page_simple.PageSimple o-- saves.SaveComponents
+page_simple.PageSimple o-- utils.get_files_in_directory
+page_simple.PageSimple o-- components.DirectoryLabelText
+page_simple.PageSimple o-- components.DirectoryButtonText
+page_simple.PageSimple o-- components.Checkbutton
+page_simple.PageSimple o-- components.YearEntry
+page_simple.PageSimple o-- components.LabelDropdownList
+page_simple.PageSimple o-- components.ListboxWidget
+page_simple.PageSimple o-- page_inspect.StringVar
+page_simple.PageSimple o-- ftp_frame.FtpFrame
+
+ftp_frame.FtpFrame o-- ftp_frame.get_ftp_object
+ftp_frame.FtpFrame o-- ftp_frame.get_ftp_object
+ftp_frame.FtpFrame o-- ftp_frame.get_ftp_object
+ftp_frame.FtpFrame o-- saves.SaveComponents
+ftp_frame.FtpFrame o-- components.DirectoryLabelText
+ftp_frame.FtpFrame o-- components.FilePathButtonText
+ftp_frame.FtpFrame o-- components.ListboxWidget
+ftp_frame.FtpFrame o-- page_inspect.StringVar
+
+ftp_frame.get_ftp_object o-- ftp.Ftp
+
+page_edit.PageEditRaw o-- saves.SaveComponents
+page_edit.PageEditRaw o-- components.DirectoryButtonText
+page_edit.PageEditRaw o-- components.Checkbutton
+page_edit.PageEditRaw o-- components.FilePathButtonText
+page_edit.PageEditRaw o-- components.LabelEntry
+page_edit.PageEditRaw o-- page_inspect.StringVar
+
+page_start.PageStart o-- saves.SaveComponents
+page_start.PageStart o-- components.DirectoryLabelText
+page_start.PageStart o-- components.Checkbutton
+page_start.PageStart o-- components.LabelDropdownList
+page_start.PageStart o-- components.YearEntry
+page_start.PageStart o-- components.DirectoryButtonText
+page_start.PageStart o-- components.ListboxWidget
+page_start.PageStart o-- ftp_frame.FtpFrame
+page_start.PageStart o-- plot_options_frame.PlotOptionsFrame
+
+page_user.PageUser o-- utils.ColorsList
+page_user.PageUser o-- utils.MarkerList
+
+packs_info.PacksInfo o-- components.ListboxWidget
+packs_info.PacksInfo o-- page_inspect.StringVar
+
+components.LabelText o-- page_inspect.StringVar
+
+components.ButtonText o-- page_inspect.StringVar
+
+components.DirectoryButtonText o-- page_inspect.StringVar
+
+components.FilePathButtonText o-- page_inspect.StringVar
+
+plot_options_frame.PlotOptionsFrame o-- page_inspect.StringVar
+
+@enduml
