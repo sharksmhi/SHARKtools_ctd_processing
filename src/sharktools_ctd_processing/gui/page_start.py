@@ -368,7 +368,9 @@ class PageStart(tk.Frame):
             return False
         if with_config and len(names) == 1:
             path = Path(directory, names[0])
+            print(f'{path=}')
             pack = file_explorer.get_package_for_file(path)
+            print(f'{pack.key=}')
             self._show_config_plot_popup(pack)
         else:
             for name in names:
@@ -382,6 +384,8 @@ class PageStart(tk.Frame):
 
     def _on_return_plot_config(self, pack, **kwargs):
         plot.create_seabird_like_plots_for_package(pack, self.file_handler.get_dir('local', 'plots'), **kwargs)
+        if not self._plot_config_popup:
+            return
         self._plot_config_popup.grab_release()
         self._plot_config_popup.destroy()
         self._plot_config_popup = None
