@@ -51,7 +51,7 @@ class PageStart(tk.Frame):
         self._save_obj = SaveComponents(key='ctd_processing')
 
         # self.sbe_paths = paths.SBEPaths()
-        # self.sbe_processing_paths = SBEProcessingPaths(self.sbe_paths)
+        # self.get_sbe_processing_paths() = SBEProcessingPaths(self.sbe_paths)
 
         # One for each year for the following attributes
         self._file_handlers = {}
@@ -77,17 +77,27 @@ class PageStart(tk.Frame):
     def year(self):
         return self._year.get()
 
-    @property
-    def file_handler(self):
-        year = self._year.get()
+    # @property
+    # def file_handler(self):
+    #     year = self._year.get()
+    #     if not year:
+    #         messagebox.showinfo('Inget år', 'Inget år är valt för processeringen')
+    #         return
+    #     return self._file_handlers.setdefault(year, get_seabird_file_handler(year=year))
+    
+    def get_file_handler(self, year: int | str = None, cruise: int | str = None):
+        year = year or self._year.get()
         if not year:
             messagebox.showinfo('Inget år', 'Inget år är valt för processeringen')
             return
-        return self._file_handlers.setdefault(year, get_seabird_file_handler(year=year))
+        kw = dict(year=year)
+        if cruise:
+            kw["cruise"] = cruise
+        return self._file_handlers.setdefault(year, get_seabird_file_handler(**kw))
 
     def update_file_handler(self):
         logger.debug('start: update_file_handler')
-        handler = self.file_handler
+        handler = self.get_file_handler()
         # Update paths
 
         self._update_file_handler_source(handler)
@@ -96,7 +106,7 @@ class PageStart(tk.Frame):
         self._update_file_handler_server(handler)
         
         try:
-            self.sbe_processing_paths.update_paths()
+            self.get_sbe_processing_paths().update_paths()
         except RootDirectoryNotSetError:
             pass
 
@@ -105,7 +115,7 @@ class PageStart(tk.Frame):
         return handler
 
     def _update_file_handler_source(self, handler=None):
-        handler = handler or self.file_handler
+        handler = handler or self.get_file_handler()
         if not handler:
             logger.debug('No handler active. Return in _update_file_handler_source')
             return
@@ -119,9 +129,10 @@ class PageStart(tk.Frame):
         except Exception as e:
             self._local_data_path_source.value = ''
             messagebox.showwarning('Setting path', e)
+            raise
 
     def _update_file_handler_local(self, handler=None):
-        handler = handler or self.file_handler
+        handler = handler or self.get_file_handler()
         if not handler:
             logger.debug('No handler active. Return in _update_file_handler_local')
             return
@@ -138,7 +149,7 @@ class PageStart(tk.Frame):
             messagebox.showwarning('Setting path', e)
 
     def _update_file_handler_server(self, handler=None):
-        handler = handler or self.file_handler
+        handler = handler or self.get_file_handler()
         if not handler:
             logger.debug('No handler active. Return in _update_file_handler_server')
             return
@@ -155,7 +166,7 @@ class PageStart(tk.Frame):
             messagebox.showwarning('Setting path', e)
 
     def _update_file_handler_config(self, handler=None):
-        handler = handler or self.file_handler
+        handler = handler or self.get_file_handler()
         if not handler:
             logger.debug('No handler active. Return in _update_file_handler_config')
             return
@@ -170,17 +181,14 @@ class PageStart(tk.Frame):
             self._config_path.value = ''
             messagebox.showwarning('Setting path', e)
 
+    def get_sbe_processing_paths(self, **kwargs):
+        return self._sbe_processing_paths.setdefault(self.year, SBEProcessingPaths(self.get_file_handler(**kwargs)))
 
-    @property
-    def sbe_processing_paths(self):
-        return self._sbe_processing_paths.setdefault(self.year, SBEProcessingPaths(self.file_handler))
-
-    @property
-    def sbe_processing(self):
+    def get_sbe_processing(self, **kwargs):
         return self._sbe_processing_objs.setdefault(self.year,
                                                     SBEProcessing(
-                                                        sbe_paths=self.file_handler,
-                                                        sbe_processing_paths=self.sbe_processing_paths
+                                                        sbe_paths=self.get_file_handler(),
+                                                        sbe_processing_paths=self.get_sbe_processing_paths(**kwargs)
                                                     )
                                                     )
 
@@ -204,7 +212,7 @@ class PageStart(tk.Frame):
                                       self._create_plots_option
                                       )
 
-        self._save_obj.load(user=self.user.name)
+        # self._save_obj.load(user=self.user.name)
 
         subscribe('change_config_path', self._callback_change_config_path)
         subscribe('change_local_data_path_source', self._callback_change_local_source_directory)
@@ -247,10 +255,10 @@ class PageStart(tk.Frame):
             if message:
                 messagebox.showwarning('Rotkatalog saknas', f'Rotkatalog för configfiler saknas!')
             return False
-        self.sbe_processing_paths.update_paths()
+        self.get_sbe_processing_paths().update_paths()
         self._update_platform_list()
         if self._platform.value:
-            self.sbe_processing.set_platform(self._platform.value)
+            self.get_sbe_processing().set_platform(self._platform.value)
             self._update_surfacesaok_list()
 
         return True
@@ -261,7 +269,7 @@ class PageStart(tk.Frame):
     #         if message:
     #             messagebox.showwarning('Rotkatalog saknas', f'Lokal rootkatalog saknas!')
     #         return False
-    #     self.sbe_processing_paths.update_paths()
+    #     self.get_sbe_processing_paths().update_paths()
     #     self._update_local_data_directories()
     #     return True
     #
@@ -275,7 +283,7 @@ class PageStart(tk.Frame):
     #         if message:
     #             messagebox.showwarning('Rotkatalog saknas', f'Server rootkatalog saknas!')
     #         return False
-    #     self.sbe_processing_paths.update_paths()
+    #     self.get_sbe_processing_paths().update_paths()
     #     self._update_server_data_directories()
     #     return True
 
@@ -283,13 +291,13 @@ class PageStart(tk.Frame):
         if not self._config_path.value:
             self._surfacesoak.values = []
             return
-        self._surfacesoak.values = list(self.sbe_processing.get_surfacesoak_options())
+        self._surfacesoak.values = list(self.get_sbe_processing().get_surfacesoak_options())
 
     def _update_platform_list(self):
         if not self._config_path.value:
             self._platform.values = []
             return
-        self._platform.values = list(self.sbe_processing.get_platform_options())
+        self._platform.values = list(self.get_sbe_processing().get_platform_options())
 
     def _clear_local_file_lists(self):
         self._files_local_raw.update_items([])
@@ -305,11 +313,10 @@ class PageStart(tk.Frame):
         self.parent_app.main_app.show_subframe('SHARKtools_pre_system_Svea', 'PageStart')
 
     def _copy_to_server_and_update(self, files):
-        print(f'{files=}')
         for file in files:
             if 'test' in file:
                 continue
-            file_handler = self.file_handler
+            file_handler = self.get_file_handler()
             file_handler.select_file(file)
             file_handler.copy_files_to_server(update=self._overwrite.value)
         self._update_files_all_server()
@@ -335,33 +342,33 @@ class PageStart(tk.Frame):
             paths.append(Path(directory, file))
         return paths
 
-    def _set_ctd_processing_object_with_latest_selected_file(self):
-        """
-        """
-        selected = self._files_local_source.get_selected()
-        if not selected:
-            return None
-        path = Path(self._local_data_path_source.value, selected[-1])
-        self.sbe_processing.select_file(path)
+    # def _set_ctd_processing_object_with_latest_selected_file(self):
+    #     """
+    #     """
+    #     selected = self._files_local_source.get_selected()
+    #     if not selected:
+    #         return None
+    #     path = Path(self._local_data_path_source.value, selected[-1])
+    #     self.sbe_processing.select_file(path)
 
     def _update_local_data_directories(self):
         """ Sets local data paths based on info in processing.CtdProcessing object. """
         # self._local_data_path_source.set(path=self.sbe_paths.get_local_directory('source'))
-        if not self.file_handler.root_dir_is_set('local'):
+        if not self.get_file_handler().root_dir_is_set('local'):
             return
-        self._local_data_path_raw.set(path=self.file_handler.get_dir('local', 'raw'))
-        self._local_data_path_cnv.set(path=self.file_handler.get_dir('local', 'cnv'))
-        self._local_data_path_qc.set(path=self.file_handler.get_dir('local', 'data'))
-        self._local_data_path_nsf.set(path=self.file_handler.get_dir('local', 'data'))
+        self._local_data_path_raw.set(path=self.get_file_handler().get_dir('local', 'raw'))
+        self._local_data_path_cnv.set(path=self.get_file_handler().get_dir('local', 'cnv'))
+        self._local_data_path_qc.set(path=self.get_file_handler().get_dir('local', 'data'))
+        self._local_data_path_nsf.set(path=self.get_file_handler().get_dir('local', 'data'))
         self._ftp_frame.update_frame()
 
     def _update_server_data_directories(self):
-        if not self.file_handler.root_dir_is_set('server'):
+        if not self.get_file_handler().root_dir_is_set('server'):
             return
-        self._server_data_path_nsf.set(path=self.file_handler.get_dir('server', 'data') or '')
+        self._server_data_path_nsf.set(path=self.get_file_handler().get_dir('server', 'data') or '')
 
     def _create_plots(self, with_config=False):
-        directory = self.file_handler.get_dir('local', 'data')
+        directory = self.get_file_handler().get_dir('local', 'data')
         names = self._files_local_qc.get_selected()
         if not names:
             messagebox.showwarning('Skapa plottar', 'Inga filer valda för att skapa plottar!')
@@ -376,14 +383,14 @@ class PageStart(tk.Frame):
             for name in names:
                 path = Path(directory, name)
                 pack = file_explorer.get_package_for_file(path)
-                plot.create_seabird_like_plots_for_package(pack, self.file_handler.get_dir('local', 'plots'))
+                plot.create_seabird_like_plots_for_package(pack, self.get_file_handler().get_dir('local', 'plots'))
             return True
 
     def _show_config_plot_popup(self, pack):
         self._plot_config_popup = frames.PlotOptionsFrame(self, pack, callback=self._on_return_plot_config)
 
     def _on_return_plot_config(self, pack, **kwargs):
-        plot.create_seabird_like_plots_for_package(pack, self.file_handler.get_dir('local', 'plots'), **kwargs)
+        plot.create_seabird_like_plots_for_package(pack, self.get_file_handler().get_dir('local', 'plots'), **kwargs)
         if not self._plot_config_popup:
             return
         self._plot_config_popup.grab_release()
@@ -395,7 +402,9 @@ class PageStart(tk.Frame):
                       pady=5,
                       sticky='nw')
 
-        self._listbox_prop = {'width': 45, 'height': 6}
+        self._listbox_prop = dict(width=45,
+                                  height=6
+                                  )
 
         self._top_frame = tk.Frame(self)
         self._top_frame.grid(row=0, column=0, columnspan=2, **layout)
@@ -478,7 +487,7 @@ class PageStart(tk.Frame):
                                                                       row=r, column=0, columnspan=2, **layout)
 
         r += 1
-        listbox_prop = {'bg': '#b5c1ff'}
+        listbox_prop = dict(bg="#b5c1ff")
         listbox_prop.update(self._listbox_prop)
         self._files_local_source = tkw.ListboxSelectionWidget(frame, row=r, column=0, columnspan=2,
                                                               count_text='filer',
@@ -535,7 +544,7 @@ class PageStart(tk.Frame):
                                                                   row=r, column=0, **layout)
 
         r += 1
-        listbox_prop = {'bg': '#9deda3'}
+        listbox_prop = dict(bg="#9deda3")
         listbox_prop.update(self._listbox_prop)
         self._files_local_cnv = tkw.ListboxSelectionWidget(frame, row=r, column=0,
                                                            count_text='filer',
@@ -566,7 +575,7 @@ class PageStart(tk.Frame):
                                                                  # end_with_folders=['data', '<YEAR>', 'raw'],
                                                                  row=0, column=0, **layout)
 
-        listbox_prop = {'bg': '#e38484'}
+        listbox_prop = dict(bg="#e38484")
         listbox_prop.update(self._listbox_prop)
         self._files_local_qc = tkw.ListboxSelectionWidget(left_frame, row=2, column=0,
                                                           count_text='filer',
@@ -641,7 +650,7 @@ class PageStart(tk.Frame):
         # Frame all
         tk.Label(frame_all_files, text='Alla filer').grid(row=0, column=0)
 
-        listbox_prop = {'bg': '#bad7f7'}
+        listbox_prop = dict(bg="#bad7f7")
         listbox_prop.update(self._listbox_prop)
         self._files_local_nsf_all = tkw.ListboxWidget(frame_all_files, row=1, column=0,
                                                       include_delete_button=False,
@@ -655,7 +664,7 @@ class PageStart(tk.Frame):
         # Frame missing
         tk.Label(frame_missing_files, text='Filer som inte finns på servern').grid(row=0, column=0)
 
-        listbox_prop = {'bg': '#f77c7c'}
+        listbox_prop = dict(bg="#f77c7c")
         listbox_prop.update(self._listbox_prop)
         self._files_local_nsf_missing = tkw.ListboxWidget(frame_missing_files, row=1, column=0,
                                                           include_delete_button=False,
@@ -667,22 +676,22 @@ class PageStart(tk.Frame):
         tkw.grid_configure(frame_missing_files, nr_rows=3)
 
         # Frame not updated
-        tk.Label(frame_not_updated_files, text='Filer som inte är uppdaterade på servern').grid(row=0, column=0)
-
-        listbox_prop = {'bg': '#fa8e8e'}
-        listbox_prop.update(self._listbox_prop)
-        self._files_local_nsf_not_updated = tkw.ListboxWidget(frame_not_updated_files, row=1, column=0,
-                                                              include_delete_button=False,
-                                                              prop_listbox=listbox_prop, **layout)
-
-        self._button_continue_nsf_not_updated = tk.Button(frame_not_updated_files, text='Kopiera till servern',
-                                                          command=self._callback_copy_not_updated_to_server)
-        self._button_continue_nsf_not_updated.config(state='disabled')
-        self._button_continue_nsf_not_updated.grid(row=2, column=0, padx=5, pady=2, sticky='s')
-        tkw.grid_configure(frame_not_updated_files, nr_rows=3)
+        # tk.Label(frame_not_updated_files, text='Filer som inte är uppdaterade på servern').grid(row=0, column=0)
+        #
+        # listbox_prop = dict(bg="#fa8e8e")
+        # listbox_prop.update(self._listbox_prop)
+        # self._files_local_nsf_not_updated = tkw.ListboxWidget(frame_not_updated_files, row=1, column=0,
+        #                                                       include_delete_button=False,
+        #                                                       prop_listbox=listbox_prop, **layout)
+        #
+        # self._button_continue_nsf_not_updated = tk.Button(frame_not_updated_files, text='Kopiera till servern',
+        #                                                   command=self._callback_copy_not_updated_to_server)
+        # self._button_continue_nsf_not_updated.config(state='disabled')
+        # self._button_continue_nsf_not_updated.grid(row=2, column=0, padx=5, pady=2, sticky='s')
+        # tkw.grid_configure(frame_not_updated_files, nr_rows=3)
 
         # Selected
-        listbox_prop = {'bg': '#89ed80'}
+        listbox_prop = dict(bg="#89ed80")
         listbox_prop.update(self._listbox_prop)
         self._files_local_nsf_select = tkw.ListboxSelectionWidget(self._notebook_copy_to_server.frame_valj,
                                                                   count_text='filer',
@@ -720,7 +729,7 @@ class PageStart(tk.Frame):
                                                                    column=c, **layout)
 
         r += 1
-        listbox_prop = {'bg': '#e4e864'}
+        listbox_prop = dict(bg="#e4e864")
         listbox_prop.update(self._listbox_prop)
         self._files_server = tkw.ListboxWidget(frame,
                                                include_delete_button=False,
@@ -739,7 +748,7 @@ class PageStart(tk.Frame):
 ########################################################################################################################
 
     def _callback_select_platform(self, *args):
-        self.sbe_processing.set_platform(self._platform.value)
+        self.get_sbe_processing().set_platform(self._platform.value)
         self._update_surfacesaok_list()
 
     def _callback_change_local_source_directory(self, *args):
@@ -808,8 +817,8 @@ class PageStart(tk.Frame):
         files = []
         nr_files_qc = 0
         for name in file_names:
-            self.file_handler.select_file(name)
-            local_file_path = self.file_handler.get_file_path('local', 'data', name)
+            self.get_file_handler().select_file(name)
+            local_file_path = self.get_file_handler().get_file_path('local', 'data', name)
             if not self._intvar_allow_automatic_qc_same_day.get():
                 sf = StandardFormatComments(local_file_path)
                 if sf.has_automatic_qc_today():
@@ -840,19 +849,19 @@ class PageStart(tk.Frame):
                                        dataset_name=dset_name)
                 qc_session.run()
 
-            qc_session.write_log(Path(self.file_handler.get_dir('local', 'temp'), 'automatic_qc_log.yaml'),
+            qc_session.write_log(Path(self.get_file_handler().get_dir('local', 'temp'), 'automatic_qc_log.yaml'),
                                  reset_log=True)
 
             data_path = session.save_data(datasets,
                                           writer='ctd_standard_template', return_data_path=True,
-                                          save_path=self.file_handler.get_dir('local', 'temp'),
+                                          save_path=self.get_file_handler().get_dir('local', 'temp'),
                                           )
 
             # Den här metoden använder therading vilket innebär att vi måste vänta på att filerna skapats innan vi kan kopiera dem.
             data_path = Path(data_path)
             time.sleep(.5)
             for source_path in Path(data_path).iterdir():
-                target_path = Path(self.file_handler.get_dir('local', 'data'), source_path.name)
+                target_path = Path(self.get_file_handler().get_dir('local', 'data'), source_path.name)
                 if target_path.exists() and not self._overwrite:
                     continue
                 shutil.copyfile(str(source_path), str(target_path))
@@ -876,7 +885,7 @@ class PageStart(tk.Frame):
         self._button_automatic_qc.config(state='disabled')
         self._button_close_manual_qc.config(bg='red')
         file_names = self._files_local_qc.get_selected()
-        self.bokeh_server = VisQC(data_directory=self.file_handler.get_dir('local', 'data'),
+        self.bokeh_server = VisQC(data_directory=self.get_file_handler().get_dir('local', 'data'),
                                   visualize_setting='smhi_expedition_vis',
                                   filters={'file_names': file_names})
         self.bokeh_server.start()
@@ -905,7 +914,7 @@ class PageStart(tk.Frame):
         created = self._create_plots(with_config=True)
         if created:
             messagebox.showinfo('Skapa plottar',
-                                f"Plottar har skapats här: {self.file_handler.get_dir('local', 'plots')}")
+                                f"Plottar har skapats här: {self.get_file_handler().get_dir('local', 'plots')}")
         self.root_app.close_progress_window()
         logger.debug('end: _callback_create_plots')
 
@@ -965,7 +974,7 @@ class PageStart(tk.Frame):
             packs = file_explorer.get_packages_from_file_list(cnv_files, instrument_type='sbe', as_list=True,
                                                               old_key=self._old_key.value)
             new_packs = ctd_processing.create_standard_format_for_packages(packs,
-                                                                           file_handler=self.file_handler,
+                                                                           file_handler=self.get_file_handler(),
                                                                            # config_root_directory=self._config_path.value,
                                                                            overwrite=self._overwrite.value,
                                                                            sharkweb_btl_row_file=None,
@@ -1025,6 +1034,8 @@ class PageStart(tk.Frame):
 
         for file_name in selected:
             path = Path(self._local_data_path_source.value, file_name)
+            file = file_explorer.get_file_object_for_path(path)
+            file_handler = self.get_file_handler(cruise=file("cruise"))
             ignore_mismatch = False
             try_fixing_mismatch = False
             continue_trying = True
@@ -1033,7 +1044,7 @@ class PageStart(tk.Frame):
                     pack = ctd_processing.process_sbe_file(path,
                                                            target_root_directory=self._local_data_path_root.value,
                                                            config_root_directory=self._config_path.value,
-                                                           file_handler=self.file_handler,
+                                                           file_handler=file_handler,
                                                            platform=self._platform.value,
                                                            surfacesoak=self._surfacesoak.value,
                                                            tau=self._tau.value,
@@ -1045,7 +1056,6 @@ class PageStart(tk.Frame):
                                                            create_asvp_file=create_asvp_file,
                                                            asvp_output_dir=asvp_output_dir,
                                                            )
-
                     processed_files.append(pack['hex'])
                     continue_trying = False
                 except FileExistsError:
@@ -1091,7 +1101,7 @@ class PageStart(tk.Frame):
 
     def _update_files_all_local(self):
         # self.sbe_file_handler.update_all_local_files()
-        if not self.file_handler.root_dir_is_set('local'):
+        if not self.get_file_handler().root_dir_is_set('local'):
             logger.warning('Local root directory is not set')
             return
 
@@ -1103,7 +1113,7 @@ class PageStart(tk.Frame):
         self._update_ftp_frame()
 
     def _update_files_all_server(self):
-        if not self.file_handler.root_dir_is_set('server'):
+        if not self.get_file_handler().root_dir_is_set('server'):
             logger.warning('Server root directory is not set')
             return
         self._update_files_server()
@@ -1125,19 +1135,19 @@ class PageStart(tk.Frame):
     def _update_files_local_source(self):
         """Updates local file list based on files found in path: self._local_data_path_source"""
         logger.debug('start: _update_files_local_source')
-        files = self.file_handler.get_file_names('source', 'root', suffixes=['.hex'])
+        files = self.get_file_handler().get_file_names('source', 'root', suffixes=['.hex'])
         self._files_local_source.update_items(files)
         logger.debug('end: _update_files_local_source')
 
     def _update_files_local_raw(self):
         logger.debug('start: _update_files_local_raw')
-        files = self.file_handler.get_file_names('local', 'raw')
+        files = self.get_file_handler().get_file_names('local', 'raw')
         self._files_local_raw.update_items(files)
         logger.debug('end: _update_files_local_raw')
 
     def _update_files_local_cnv(self):
         logger.debug('start: _update_files_local_cnv')
-        files = self.file_handler.get_file_names('local', 'cnv', suffixes=['.cnv'])
+        files = self.get_file_handler().get_file_names('local', 'cnv', suffixes=['.cnv'])
         self._files_local_cnv.update_items(files)
         self._files_local_cnv.deselect_all()
         all_cnv_files = {}
@@ -1153,7 +1163,7 @@ class PageStart(tk.Frame):
 
     def _update_files_local_qc(self):
         logger.debug('start: _update_files_local_qc')
-        files = self.file_handler.get_file_names('local', 'data') or []
+        files = self.get_file_handler().get_file_names('local', 'data') or []
         self._files_local_qc.update_items(files)
         self._files_local_qc.deselect_all()
         all_txt_files = {}
@@ -1176,24 +1186,24 @@ class PageStart(tk.Frame):
 
     def _update_files_local_nsf_all(self):
         logger.debug('start: _update_files_local_nsf_all')
-        files = self.file_handler.get_file_names('local', 'data')
+        files = self.get_file_handler().get_file_names('local', 'data')
         self._files_local_nsf_all.update_items(files)
         logger.debug('end: _update_files_local_nsf_all')
 
     def _update_files_local_nsf_select(self):
         logger.debug('start: _update_files_local_nsf_select')
-        files = self.file_handler.get_file_names('local', 'data')
+        files = self.get_file_handler().get_file_names('local', 'data')
         self._files_local_nsf_select.update_items(files)
         logger.debug('end: _update_files_local_nsf_select')
 
     def _update_files_local_nsf_not_on_server(self):
         logger.debug('start: _update_files_local_nsf_not_on_server')
-        files = self.file_handler.get_file_names('local', 'data')
+        files = self.get_file_handler().get_file_names('local', 'data')
         not_on_server = []
         for file in files:
             try:
-                self.file_handler.select_file(file)
-                if self.file_handler.not_on_server():
+                self.get_file_handler().select_file(file)
+                if self.get_file_handler().not_on_server():
                     not_on_server.append(file)
             except exceptions.InvalidFileNameFormat:
                 continue
@@ -1202,12 +1212,12 @@ class PageStart(tk.Frame):
 
     def _update_files_local_nsf_not_updated_on_server(self):
         logger.debug('start: _update_files_local_nsf_not_updated_on_server')
-        files = self.file_handler.get_file_names('local', 'data')
+        files = self.get_file_handler().get_file_names('local', 'data')
         not_updated_on_server = []
         for file in files:
             try:
-                self.file_handler.select_file(file)
-                if self.file_handler.not_updated_on_server():
+                self.get_file_handler().select_file(file)
+                if self.get_file_handler().not_updated_on_server():
                     not_updated_on_server.append(file)
             except exceptions.InvalidFileNameFormat:
                 continue
@@ -1217,7 +1227,7 @@ class PageStart(tk.Frame):
     def _update_files_server(self):
         """Updates server file list based on files found in path: self._server_data_path_nsf"""
         logger.debug('start: _update_files_server')
-        files = self.file_handler.get_file_names('server', 'data')
+        files = self.get_file_handler().get_file_names('server', 'data')
         self._files_server.update_items(files)
         logger.debug('end: _update_files_server')
 
